@@ -4,7 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auth test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
 </head>
+<script>
+    async function signup(){
+        const username = document.getElementById("signup-username").value;
+        const password = document.getElementById("signup-password").value;
+
+        await axios.post("/signup",{username,password});
+        alert("Signed up successfully!");
+    }
+
+    async function signin(){
+        const username = document.getElementById("signin-username").value;
+        const password = document.getElementById("signin-password").value;
+
+        const response = await axios.post("/signin",{username,password});
+        localStorage.setItem("token",response.data.token);
+        alert("Signed in successfully!");
+         getUserInformation();
+    }
+
+    async function logout(){
+        localStorage.removeItem("token");
+        alert("Logged out!");
+    }
+
+    async function getUserInformation(){
+        const token = localStorage.getItem("token");
+        if(token){
+            const response = await axios.get("/me",{
+                headers : {Authorization : token}
+            });
+            document.getElementById("information").innerHTML = response.data.username;
+        }
+    }
+</script>
 <body>
 
     <div>
