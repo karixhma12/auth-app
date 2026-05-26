@@ -5,6 +5,8 @@ const JWT_SECRET = "my_secret_key";
 
 app.use(express.json());
 
+app.use(express.static("./public"));
+
 const users = []; 
 
 function auth(req,res,next){
