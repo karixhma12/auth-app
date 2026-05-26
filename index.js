@@ -1,14 +1,11 @@
 const express = require("express");
 const app = express();
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = "my_secret_key";
 
 app.use(express.json());
 
 const users = []; 
-
-function generateToken(){
-    let token = Math.random().toString();
-    return token;
-}
 
 app.post("/signin",(req,res)=>{
     const username = req.body.username;
@@ -20,7 +17,7 @@ app.post("/signin",(req,res)=>{
         res.status(403).json({message : "Invalid username or password"});
     }
     else{
-        let token = generateToken();
+        let token = jwt.sign({username : username}, JWT_SECRET);
         user.token = token;
         res.json({message : "You have signed in!", token : token});
     }
@@ -36,8 +33,10 @@ app.post("/signup",(req,res)=>{
 
 app.get("/me",(req,res)=>{
     const token = req.headers.authorization;
+    const userDetails = jwt.verify(token,JWT_SECRET);
+    const username = userDetails.username;
     const user = users.find((user)=>{
-        return user.token===token;
+        return user.username===username;
     })
     if(!user){
         res.status(401).send({message : "Unauthorized!"});
