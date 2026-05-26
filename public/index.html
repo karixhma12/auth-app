@@ -6,7 +6,46 @@
     <title>Auth test</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
 </head>
-<script>
+<body>
+    <div id="signupin-div">
+        <div>
+            Signup
+            <input type="text" id="signup-username" placeholder="Username">
+            <input type="text" id="signup-password" placeholder="Password">
+            <button onclick="signup()"> Submit </button>
+        </div>
+
+        <div>
+            Signin 
+            <input type="text" id="signin-username" placeholder="Username">
+            <input type="text" id="signin-password" placeholder="Password">
+            <button onclick="signin()"> Submit </button>
+        </div>
+    </div>  
+
+    <div id="logout-div">
+        <div>
+            User Information:
+            <div id="information"> </div>
+        </div>
+
+        <div>
+            <button onclick="logout()"> Logout </button>
+        </div>
+    </div>  
+
+    <script>
+    function updateUI(){
+        if(localStorage.getItem("token")){
+        document.getElementById("logout-div").style.display = "block";
+        document.getElementById("signupin-div").style.display = "none";
+        }
+        else{
+            document.getElementById("signupin-div").style.display = "block";
+            document.getElementById("logout-div").style.display = "none";
+        }
+    }
+
     async function signup(){
         const username = document.getElementById("signup-username").value;
         const password = document.getElementById("signup-password").value;
@@ -23,11 +62,13 @@
         localStorage.setItem("token",response.data.token);
         alert("Signed in successfully!");
          getUserInformation();
+         updateUI();
     }
 
     async function logout(){
         localStorage.removeItem("token");
         alert("Logged out!");
+        updateUI();
     }
 
     async function getUserInformation(){
@@ -39,30 +80,8 @@
             document.getElementById("information").innerHTML = response.data.username;
         }
     }
+
+    updateUI();
 </script>
-<body>
-
-    <div>
-        Signup
-        <input type="text" id="signup-username" placeholder="Username">
-        <input type="text" id="signup-password" placeholder="Password">
-        <button onclick="signup()"> Submit </button>
-    </div>
-
-    <div>
-        Signin 
-        <input type="text" id="signin-username" placeholder="Username">
-        <input type="text" id="signin-password" placeholder="Password">
-        <button onclick="signin()"> Submit </button>
-    </div>
-
-    <div>
-        User Information:
-        <div id="information"> </div>
-    </div>
-
-    <div>
-        <button onclick="logout()"> Logout </button>
-    </div>
 </body>
 </html>
