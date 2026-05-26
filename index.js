@@ -7,6 +7,25 @@ app.use(express.json());
 
 const users = []; 
 
+function auth(req,res,next){
+    const token = req.headers.authorization;
+
+    if(token){
+        jwt.verify(token,JWT_SECRET,(err,decoded)=>{
+            if(err){
+                return res.status(401).send({message : "Unauthorized!"});
+            }
+            else{
+                req.user = decoded;
+                next();
+            }
+        })
+    }
+    else{
+        return res.status(401).send({message : "Unauthorized!"});
+    }
+}
+
 app.post("/signin",(req,res)=>{
     const username = req.body.username;
     const password = req.body.password;
@@ -31,19 +50,8 @@ app.post("/signup",(req,res)=>{
     res.json({message : "You have signed up"});
 });
 
-app.get("/me",(req,res)=>{
-    const token = req.headers.authorization;
-    const userDetails = jwt.verify(token,JWT_SECRET);
-    const username = userDetails.username;
-    const user = users.find((user)=>{
-        return user.username===username;
-    })
-    if(!user){
-        res.status(401).send({message : "Unauthorized!"});
-    }
-    else{
-        res.status(200).send({username : user.username});
-    }
+app.get("/me",auth,(req,res)=>{
+    res.status(200).send({username : req.user.username});  
 })
 
 
