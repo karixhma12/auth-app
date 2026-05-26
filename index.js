@@ -5,6 +5,27 @@ app.use(express.json());
 
 const users = []; 
 
+function generateToken(){
+    let token = Math.random().toString();
+    return token;
+}
+
+app.post("/signin",(req,res)=>{
+    const username = req.body.username;
+    const password = req.body.password;
+    let user = users.find(user=>{
+        return user.username === username && user.password===password;
+    })
+    if(!user){
+        res.status(403).json({message : "Invalid username or password"});
+    }
+    else{
+        let token = generateToken();
+        user.token = token;
+        res.json({message : "You have signed in!", token : token});
+    }
+})
+
 app.post("/signup",(req,res)=>{
     const username = req.body.username;
     const password = req.body.password;
